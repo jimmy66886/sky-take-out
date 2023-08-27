@@ -95,4 +95,20 @@ public class EmployeeController {
         return Result.success(pageResult);
     }
 
+    /**
+     * 启用/禁用员工账号
+     * 参数有两个，一个是路径参数，路径参数要用注解来获取，而地址栏传参不需要加注解
+     *
+     * @param status
+     * @param id
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation("启用/禁用员工账号")
+    public Result startOrStop(@PathVariable("status") Integer status, Long id) {
+        log.info("启用/禁用员工账号： status:{}, id:{}", status, id);
+        employeeService.startOrStop(status,id);
+        return Result.success();
+    }
+
 }
