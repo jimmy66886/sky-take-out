@@ -3,11 +3,29 @@
 
 <mapper namespace="com.sky.mapper.DishMapper">
 
-<!--    useGeneratedKeys就是表示要插入数据后将id返回,而keyProperty就是返回赋值给哪个属性上-->
+    <!--    useGeneratedKeys就是表示要插入数据后将id返回,而keyProperty就是返回赋值给哪个属性上-->
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into dish(name, category_id, price, image, description, status, create_time, update_time, create_user,
                          update_user)
         values (#{name}, #{categoryId}, #{price}, #{image}, #{description}, #{status}, #{createTime}, #{updateTime},
                 #{createUser}, #{updateUser})
     </insert>
+
+    <!--    这里要注意,加了关联查询后,下面if中的字段要加上对应的表名,不然会不出结果-->
+    <select id="pageQuery" resultType="com.sky.vo.DishVO">
+        select dish.*,
+        category.`name` category_name from dish left join category on dish.category_id = category.id
+        <where>
+            <if test="name != null">
+                and dish.name like concat('%',#{name},'%')
+            </if>
+            <if test="categoryId != null">
+                and dish.category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                and dish.status = #{status}
+            </if>
+        </where>
+        order by dish.create_time DESC
+    </select>
 </mapper>
