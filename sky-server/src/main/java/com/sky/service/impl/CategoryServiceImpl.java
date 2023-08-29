@@ -2,6 +2,7 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sky.annotation.AutoFill;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.context.BaseContext;
@@ -10,6 +11,7 @@ import com.sky.dto.CategoryDTO;
 import com.sky.dto.CategoryPageQueryDTO;
 import com.sky.entity.Category;
 import com.sky.entity.Employee;
+import com.sky.enumeration.OperationType;
 import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.CategoryMapper;
 import com.sky.mapper.DishMapper;
@@ -49,10 +51,10 @@ public class CategoryServiceImpl implements CategoryService {
         category.setStatus(StatusConstant.DISABLE);
 
         // 然后是创建时间，修改时间，创建人，修改人
-        category.setCreateTime(LocalDateTime.now());
+/*        category.setCreateTime(LocalDateTime.now());
         category.setUpdateTime(LocalDateTime.now());
         category.setCreateUser(BaseContextByMe.getCurrentId());
-        category.setUpdateUser(BaseContextByMe.getCurrentId());
+        category.setUpdateUser(BaseContextByMe.getCurrentId());*/
 
         categoryMapper.insert(category);
     }
@@ -110,8 +112,8 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = new Category();
         BeanUtils.copyProperties(categoryDTO, category);
 
-        category.setUpdateUser(BaseContextByMe.getCurrentId());
-        category.setUpdateTime(LocalDateTime.now());
+/*        category.setUpdateUser(BaseContextByMe.getCurrentId());
+        category.setUpdateTime(LocalDateTime.now());*/
 
         categoryMapper.update(category);
 
@@ -124,6 +126,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @param id
      */
     @Override
+    @AutoFill(OperationType.UPDATE)
     public void startOrStop(Integer status, Long id) {
         Category category =
                 Category.builder().id(id).status(status)

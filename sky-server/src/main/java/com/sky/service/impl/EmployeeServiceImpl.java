@@ -2,6 +2,7 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sky.annotation.AutoFill;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.PasswordConstant;
 import com.sky.constant.StatusConstant;
@@ -10,6 +11,7 @@ import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
+import com.sky.enumeration.OperationType;
 import com.sky.exception.AccountLockedException;
 import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
@@ -88,14 +90,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
 
         // 设置当前记录的创建和修改时间
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setUpdateTime(LocalDateTime.now());
+        // employee.setCreateTime(LocalDateTime.now());
+        // employee.setUpdateTime(LocalDateTime.now());
 
         // 设置记录的创建人id和修改人id
         // 从ThreadLocal中获取到登录用户的id
-        Long empId = BaseContextByMe.getCurrentId();
-        employee.setCreateUser(empId);
-        employee.setUpdateUser(empId);
+        // Long empId = BaseContextByMe.getCurrentId();
+        // employee.setCreateUser(empId);
+        // employee.setUpdateUser(empId);
 
         employeeMapper.save(employee);
     }
@@ -125,6 +127,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @param id
      */
     @Override
+    @AutoFill(value = OperationType.UPDATE)
     public void startOrStop(Integer status, Long id) {
 
         Employee employee = Employee.builder().id(id).status(status).build();
@@ -156,8 +159,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
 
-        employee.setUpdateTime(LocalDateTime.now());
-        employee.setUpdateUser(BaseContextByMe.getCurrentId());
+        /*employee.setUpdateTime(LocalDateTime.now());
+        employee.setUpdateUser(BaseContextByMe.getCurrentId());*/
 
         employeeMapper.update(employee);
     }

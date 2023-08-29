@@ -4,9 +4,12 @@ import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.OSSException;
+import com.aliyun.oss.common.auth.CredentialsProviderFactory;
+import com.aliyun.oss.common.auth.EnvironmentVariableCredentialsProvider;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+
 import java.io.ByteArrayInputStream;
 
 @Data
@@ -15,8 +18,8 @@ import java.io.ByteArrayInputStream;
 public class AliOssUtil {
 
     private String endpoint;
-    private String accessKeyId;
-    private String accessKeySecret;
+    // private String accessKeyId;
+    // private String accessKeySecret;
     private String bucketName;
 
     /**
@@ -28,8 +31,19 @@ public class AliOssUtil {
      */
     public String upload(byte[] bytes, String objectName) {
 
-        // 创建OSSClient实例。
-        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+        /**
+         * 自己新增的配置
+         */
+        EnvironmentVariableCredentialsProvider credentialsProvider = null;
+        try {
+            credentialsProvider = CredentialsProviderFactory.newEnvironmentVariableCredentialsProvider();
+        } catch (com.aliyuncs.exceptions.ClientException e) {
+            e.printStackTrace();
+        }
+
+        // 创建OSSClient实例。原版是将accessKeyId和accessKeySecret直接传入，而新版这两个值是通过环境变量获取的
+        // OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+        OSS ossClient = new OSSClientBuilder().build(endpoint, credentialsProvider);
 
         try {
             // 创建PutObject请求。
@@ -52,7 +66,7 @@ public class AliOssUtil {
             }
         }
 
-        //文件访问路径规则 https://BucketName.Endpoint/ObjectName
+        // 文件访问路径规则 https://BucketName.Endpoint/ObjectName
         StringBuilder stringBuilder = new StringBuilder("https://");
         stringBuilder
                 .append(bucketName)
@@ -63,6 +77,7 @@ public class AliOssUtil {
 
         log.info("文件上传到:{}", stringBuilder.toString());
 
+        // 最后返回上传文件的网址
         return stringBuilder.toString();
     }
 }
