@@ -63,4 +63,12 @@ public interface DishMapper {
      */
     @Select("select * from dish where id = #{id}")
     Dish getById(Long id);
+
+    /**
+     * 修改菜品-又忘了设置自动填充了
+     *
+     * @param dish
+     */
+    @AutoFill(value = OperationType.INSERT)
+    void update(Dish dish);
 }

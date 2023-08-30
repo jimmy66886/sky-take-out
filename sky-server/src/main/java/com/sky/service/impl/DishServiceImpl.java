@@ -94,6 +94,7 @@ public class DishServiceImpl implements DishService {
 
     /**
      * 批量删除菜品
+     *
      * @param ids
      */
     @Override
@@ -130,6 +131,55 @@ public class DishServiceImpl implements DishService {
      */
     @Override
     public void startOrStop(Integer status, Long id) {
+        // 直接通过builder来构建一个对象
+        Dish dish = Dish.builder().status(status).id(id).build();
+        // 然后调用之前写的更新方法即可
+        dishMapper.update(dish);
+    }
+
+    /**
+     * 根据id查询菜品,和对应的口味
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public DishVO getByIdWithFlavor(Long id) {
+
+        // 根据id查询菜品数据
+        Dish dish = dishMapper.getById(id);
+        // 根据菜品id查询口味数据
+        List<DishFlavor> flavors = dishFlavorMapper.getByDishId(id);
+        // 将查询到的口味数据封装到VO
+        DishVO dishVO = new DishVO();
+        BeanUtils.copyProperties(dish, dishVO);
+        dishVO.setFlavors(flavors);
+        return dishVO;
+    }
+
+    /**
+     * 修改菜品
+     * 学到新东西了，如果**一个东西直接修改很难办，可以考虑先删除再添加**
+     *
+     * @param dishDTO
+     */
+    @Override
+    public void updateWithFlavor(DishDTO dishDTO) {
+        // 先将dishDTO中的基本信息存入数据库
+        Dish dish = new Dish();
+        // 还是使用的老办法，拷贝对象的属性
+        BeanUtils.copyProperties(dishDTO, dish);
+        dishMapper.update(dish);
+        // 再将更新后的口味信息存入数据库，这里要用到dishFlavorMapper
+        // 但是由于口味修改很难确定，是多了是少了，还是没改，所以我们可以选择，先将原先的口味删除，再添加新的口味
+        dishFlavorMapper.deleteByDishId(dishDTO.getId());
+
+        List<DishFlavor> flavors = dishDTO.getFlavors();
+        if (flavors != null && flavors.size() > 0) {
+            flavors.forEach(flavor -> flavor.setDishId(dishDTO.getId()));
+            dishFlavorMapper.insertBatch(flavors);
+        }
+
 
     }
 }

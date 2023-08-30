@@ -11,6 +11,7 @@
                 #{createUser}, #{updateUser})
     </insert>
 
+
     <!--    这里要注意,加了关联查询后,下面if中的字段要加上对应的表名,不然会不出结果-->
     <select id="pageQuery" resultType="com.sky.vo.DishVO">
         select dish.*,
@@ -28,4 +29,38 @@
         </where>
         order by dish.create_time DESC
     </select>
+
+    <update id="update">
+        update dish
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="image != null">
+                image = #{image},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="updateUser != null">
+                update_user = #{updateUser}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+
+
 </mapper>
