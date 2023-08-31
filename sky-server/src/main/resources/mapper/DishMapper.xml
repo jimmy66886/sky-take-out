@@ -61,6 +61,13 @@
         where id = #{id}
     </update>
 
+<!--    <select id="getByCategoryId" resultType="com.sky.entity.Dish">-->
+<!--        select *-->
+<!--        from dish-->
+<!--        <where>-->
+<!--            <if test=""-->
+<!--        </where>;-->
+<!--    </select>-->
 
 
 </mapper>

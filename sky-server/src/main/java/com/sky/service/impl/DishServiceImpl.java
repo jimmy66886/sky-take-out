@@ -182,4 +182,23 @@ public class DishServiceImpl implements DishService {
 
 
     }
+
+    /**
+     * 根据分类id查询菜品
+     * 对比答案,发现问题了,这里查的是所有菜品,不管状态如何
+     *
+     * @param categoryId
+     * @return
+     */
+    @Override
+    public List<Dish> getByCategoryId(Long categoryId) {
+        // 之前写的
+        // List<Dish> list = dishMapper.getByCategoryId(categoryId);
+        // return list;
+
+        // 修改后
+        Dish dish = Dish.builder().categoryId(categoryId).status(StatusConstant.ENABLE).build();
+        return dishMapper.getByCategoryId(dish);
+
+    }
 }

@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
             String[] messageArr = message.split(" ");
             String repeatName = messageArr[2];
             // return Result.error(repeatName + "该用户名已存");
-            log.info("用户名已存在: {}", repeatName);
+            log.info("唯一键问题: {}", repeatName);
             return Result.error(repeatName + MessageConstant.ALREADY_EXISTS);
         } else {
             return Result.error(MessageConstant.UNKNOWN_ERROR);
