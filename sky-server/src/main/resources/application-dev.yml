@@ -10,3 +10,9 @@ sky:
   alioss:
     endpoint: oss-cn-beijing.aliyuncs.com
     bucket-name: zzmr-sky-take-out
+
+  redis:
+    host: 1.14.102.11
+    port: 6379
+    password: "010203"
+    database: 2
