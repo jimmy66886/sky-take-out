@@ -18,7 +18,9 @@ import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
+import com.sky.result.Result;
 import com.sky.service.SetmealService;
+import com.sky.vo.DishItemVO;
 import com.sky.vo.SetmealVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -157,7 +159,7 @@ public class SetmealServiceImpl implements SetmealService {
          * 第一种是我写的，第二种是老师写的，两种方式，都能实现效果
          */
 
-        if (status == StatusConstant.ENABLE){
+        if (status == StatusConstant.ENABLE) {
             // 根据套餐id查询套餐关联的菜品id
             List<SetmealDish> setmealDishes = setmealDishMapper.getBySetmealId(id);
             for (SetmealDish setmealDish : setmealDishes) {
@@ -243,4 +245,31 @@ public class SetmealServiceImpl implements SetmealService {
             setmealDishMapper.deleteBySetmealId(id);
         }
     }
+
+    /**
+     * 根据分类id查询套餐
+     *
+     * @param setmeal
+     * @return
+     */
+    @Override
+    public List<Setmeal> list(Setmeal setmeal) {
+
+        List<Setmeal> list = setmealMapper.getByCategoryId(setmeal);
+
+        return list;
+    }
+
+    /**
+     * 根据套餐id查询包含的菜品
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public List<DishItemVO> getDishItemById(Long id) {
+        List<DishItemVO> list = setmealMapper.getDishItemById(id);
+        return list;
+    }
+
 }

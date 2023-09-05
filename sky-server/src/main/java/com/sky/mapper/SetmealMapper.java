@@ -5,6 +5,7 @@ import com.sky.annotation.AutoFill;
 import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Setmeal;
 import com.sky.enumeration.OperationType;
+import com.sky.vo.DishItemVO;
 import com.sky.vo.SetmealVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -59,4 +60,11 @@ public interface SetmealMapper {
      * @return
      */
     Page<SetmealVO> pageQueryBySql(SetmealPageQueryDTO setmealPageQueryDTO);
+
+
+    List<Setmeal> getByCategoryId(Setmeal setmeal);
+
+    @Select("SELECT setmeal_dish.copies,dish.description,dish.image,dish.`name`" +
+            "FROM setmeal_dish LEFT JOIN dish ON setmeal_dish.dish_id = dish.id WHERE setmeal_id = #{id} ")
+    List<DishItemVO> getDishItemById(Long id);
 }

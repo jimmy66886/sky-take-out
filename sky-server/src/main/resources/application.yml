@@ -42,8 +42,17 @@ sky:
     admin-ttl: 7200000
     # 设置前端传递过来的令牌名称
     admin-token-name: token
+    # 设置jwt加密时的密钥
+    user-secret-key: itheima
+    # 设置jwt的过期时间
+    user-ttl: 7200000
+    # 设置前端传来的令牌名称
+    user-token-name: authentication
 
   # 不知道好用不用设置access Key，因为系统变量里已经设置了
   alioss:
     endpoint: ${sky.alioss.endpoint}
     bucket-name: ${sky.alioss.bucket-name}
+  wechat:
+    appid: ${sky.wechat.appid}
+    secret: ${sky.wechat.secret}
