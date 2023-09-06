@@ -10,6 +10,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,6 +52,8 @@ public class SetmealController {
      */
     @PostMapping
     @ApiOperation("新增套餐")
+    // 新增的套餐一定有对应的分类,所以根据分类id来删除这个缓存,精确删除
+    @CacheEvict(cacheNames = "setmealCache", key = "#setmealDTO.categoryId")
     public Result save(@RequestBody SetmealDTO setmealDTO) {
         log.info("新增套餐数据：{}", setmealDTO);
         setmealService.saveWithDish(setmealDTO);
@@ -73,6 +76,8 @@ public class SetmealController {
 
     @PostMapping("status/{status}")
     @ApiOperation("套餐起售/停售")
+    // 由于不能直接拿到套餐的分类id,所以选择直接清空缓存
+    @CacheEvict(cacheNames = "setmealCache", allEntries = true)
     public Result startOrStop(@PathVariable Integer status, Long id) {
         setmealService.startOrStop(status, id);
         return Result.success();
@@ -80,6 +85,8 @@ public class SetmealController {
 
     @PutMapping
     @ApiOperation("修改套餐")
+    // 理由是更改的信息具有多样性,所以选择直接清空缓存
+    @CacheEvict(cacheNames = "setmealCache", allEntries = true)
     public Result update(@RequestBody SetmealDTO setmealDTO) {
         log.info("修改的参数:{}", setmealDTO);
         setmealService.update(setmealDTO);
@@ -94,6 +101,8 @@ public class SetmealController {
      */
     @DeleteMapping
     @ApiOperation("批量删除菜品")
+    // 由于不能直接拿到套餐的分类id,所以选择直接清空缓存
+    @CacheEvict(cacheNames = "setmealCache", allEntries = true)
     public Result deleteBitch(@RequestParam List<Long> ids) {
         log.info("批量删除菜品,参数:{}", ids);
         setmealService.deleteBitch(ids);
