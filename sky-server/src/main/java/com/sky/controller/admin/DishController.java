@@ -5,15 +5,18 @@ import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
+import com.sky.service.CategoryService;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 菜品管理
@@ -30,11 +33,19 @@ public class DishController {
     @Autowired
     private DishService dishService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @PostMapping
     @ApiOperation("新增菜品")
     public Result save(@RequestBody DishDTO dishDTO) {
         log.info("新增菜品");
         dishService.saveWithFlavor(dishDTO);
+
+        // new
+        // 清理缓存数据-清理对应类型的缓存数据，先确定这个菜品的分类id，然后清空该分类id的缓存
+       cleanCache("dish_" + dishDTO.getCategoryId());
+
         return Result.success();
     }
 
@@ -65,7 +76,28 @@ public class DishController {
         // 是可以拿到的,一个数组
         log.info("传入的ids: {}", ids.size());
         dishService.deleteBatchDish(ids);
+
+        // new
+        // 批量清空缓存
+        /*for (Long id : ids) {
+            // 获取每一个菜品的分类id,这里要用到 一个 根据菜品id查询菜品的信息的方法
+            Dish dish = dishService.getById(id);
+            String key = "dish_" + dish.getCategoryId();
+            redisTemplate.delete(key);
+        }*/
+
+        // 那么还有一种方法,就是直接清空全部的缓存,所有以dish_开头的key--简单粗暴且有效
+        cleanCache("dish_*");
+
         return Result.success();
+    }
+
+    /**
+     * 提取出清空缓存的方法
+     */
+    private void cleanCache(String pattern) {
+        Set keys = redisTemplate.keys(pattern);
+        redisTemplate.delete(keys);
     }
 
     /**
@@ -81,6 +113,8 @@ public class DishController {
 
         // 将要更改的状态和被更改菜品的id传入
         dishService.startOrStop(status, id);
+
+        cleanCache("dish_*");
 
         return Result.success();
     }
@@ -109,11 +143,16 @@ public class DishController {
     public Result update(@RequestBody DishDTO dishDTO) {
         log.info("修改菜品:{} ", dishDTO);
         dishService.updateWithFlavor(dishDTO);
+
+        // new -清空缓存--但是修改时是可以修改菜品的分类的,如果菜品的分类修改了,那就要清空原本的和新的分类菜品的缓存了,也是直接全部清空?---直接清空全部
+        cleanCache("dish_*");
+
         return Result.success();
     }
 
     /**
      * 根据分类id查询菜品
+     *
      * @param categoryId
      * @return
      */

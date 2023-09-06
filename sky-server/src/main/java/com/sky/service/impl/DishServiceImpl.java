@@ -226,4 +226,10 @@ public class DishServiceImpl implements DishService {
         }
         return dishVOList;
     }
+
+    @Override
+    public Dish getById(Long id) {
+        Dish dish = dishMapper.getById(id);
+        return dish;
+    }
 }

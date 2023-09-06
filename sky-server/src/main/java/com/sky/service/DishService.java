@@ -70,4 +70,11 @@ public interface DishService {
      * @return
      */
     List<DishVO> listWithFlavor(Dish dish);
+
+    /**
+     * 清空缓存要用的方法
+     * @param id
+     * @return
+     */
+    Dish getById(Long id);
 }
