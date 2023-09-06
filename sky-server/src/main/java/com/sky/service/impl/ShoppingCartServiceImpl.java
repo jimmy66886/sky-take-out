@@ -13,6 +13,7 @@ import com.sky.service.ShoppingCartService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -99,5 +100,46 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         ShoppingCart shoppingCart = ShoppingCart.builder().userId(userId).build();
         List<ShoppingCart> list = shoppingCartMapper.list(shoppingCart);
         return list;
+    }
+
+    @Override
+    public void cleanCart() {
+        // 获取到当前用户的id 然后根据用户的id，删除该用户的所有购物车数据
+        Long userId = BaseContextByMe.getCurrentId();
+        shoppingCartMapper.deleteByUserId(userId);
+    }
+
+    /**
+     * 删除购物车的一个商品
+     *
+     * @param shoppingCartDTO
+     */
+    @Override
+    public void subShoppingCart(ShoppingCartDTO shoppingCartDTO) {
+
+        // 这里涉及到数量问题，如果这个商品的数量减去1还是大于1，那么执行删除只是number-1，而如果为1，那么就是直接删除这条数据了
+        ShoppingCart shoppingCart = new ShoppingCart();
+        BeanUtils.copyProperties(shoppingCartDTO, shoppingCart);
+
+        Long userId = BaseContextByMe.getCurrentId();
+        shoppingCart.setUserId(userId);
+        // 这样肯定还是一条数据 毋庸置疑
+        List<ShoppingCart> list = shoppingCartMapper.list(shoppingCart);
+
+        // 漏加了判断这个list集合是否为空的问题了
+        if (list != null && list.size() > 0) {
+            ShoppingCart cart = list.get(0);
+            // 判断number
+            if (cart.getNumber() == 1) {
+                // 为1，则直接删除这条记录
+                shoppingCartMapper.deleteByCartId(cart);
+            } else {
+                // 大于1，则number-1
+                cart.setNumber(cart.getNumber() - 1);
+                shoppingCartMapper.updateNumberById(cart);
+            }
+        }
+
+
     }
 }

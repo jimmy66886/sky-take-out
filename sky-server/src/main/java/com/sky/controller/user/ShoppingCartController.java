@@ -50,6 +50,21 @@ public class ShoppingCartController {
     @ApiOperation("清空购物车")
     @DeleteMapping("/clean")
     public Result cleanCart() {
+        shoppingCartService.cleanCart();
+        return Result.success();
+    }
+
+    /**
+     * 传来的数据其实和添加差不多
+     *
+     * @param shoppingCartDTO
+     * @return
+     */
+    @ApiOperation("删除购物车的一个商品")
+    @PostMapping("/sub")
+    public Result subOne(@RequestBody ShoppingCartDTO shoppingCartDTO) {
+        log.info("删除购物车的一个商品：{}", shoppingCartDTO);
+        shoppingCartService.subShoppingCart(shoppingCartDTO);
         return Result.success();
     }
 
