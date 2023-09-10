@@ -63,6 +63,7 @@ public interface OrderMapper {
 
     /**
      * 根据状态查询数量
+     *
      * @param toBeConfirmed
      * @return
      */
@@ -71,4 +72,14 @@ public interface OrderMapper {
 
     @Update("update orders set pay_status = 1,status = 2,checkout_time = #{checkoutTime} where number = #{orderNumber}")
     void changeStatusAndCheckoutTime(String orderNumber, LocalDateTime checkoutTime);
+
+    /**
+     * 根据订单状态和下单时间查询
+     *
+     * @param status
+     * @param orderTime
+     * @return
+     */
+    @Select("select * from orders where status = #{status} and order_time < #{orderTime}")
+    List<Orders> getByStatusAndOrderTimeLT(Integer status, LocalDateTime orderTime);
 }
