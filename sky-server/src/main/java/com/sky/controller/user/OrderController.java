@@ -1,11 +1,15 @@
 package com.sky.controller.user;
 
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
+import com.sky.entity.OrderDetail;
+import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -63,5 +67,49 @@ public class OrderController {
         return Result.success();
     }
 
+    /**
+     * 订单分页查询
+     *
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    @GetMapping("/historyOrders")
+    @ApiOperation("历史订单分页查询")
+    public Result<PageResult> getHistoryOrders(OrdersPageQueryDTO ordersPageQueryDTO) {
+        log.info("订单分页查询");
+        PageResult pageResult = orderService.pageQuery(ordersPageQueryDTO);
+        return Result.success(pageResult);
+    }
+
+    @GetMapping("/orderDetail/{id}")
+    @ApiOperation("订单详情")
+    public Result<OrderVO> getOrderDetail(@PathVariable Long id) {
+
+        // 传来的是orderId,要根据orderId先在order表中查到订单的基本信息,然后在order_detail表中查到详细信息,也就是菜品啥的
+
+        OrderVO orderVO = orderService.getOrderDetail(id);
+        return Result.success(orderVO);
+    }
+
+    @ApiOperation("取消订单")
+    @PutMapping("/cancel/{id}")
+    public Result cancel(@PathVariable Long id) {
+        log.info("取消订单id为:{}", id);
+        orderService.userCancelById(id);
+        return Result.success();
+    }
+
+    /**
+     * 再来一单就是将原订单中的商品重新加入到购物车中
+     *
+     * @return
+     */
+    @PostMapping("/repetition/{id}")
+    @ApiOperation("再来一单")
+    public Result repetitionOrder(@PathVariable Long id) {
+        log.info("要重新下单的订单id：{}", id);
+        orderService.repetitionOrder(id);
+        return Result.success();
+    }
 
 }
