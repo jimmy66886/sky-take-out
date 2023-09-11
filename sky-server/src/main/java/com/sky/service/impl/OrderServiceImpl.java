@@ -21,6 +21,7 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +67,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Value("${sky.baidu.ak}")
     private String ak;
+
+    @Autowired
+    private WebSocketServer webSocketServer;
 
     /**
      * 检查客户的收货地址是否超出配送范围
@@ -270,6 +274,19 @@ public class OrderServiceImpl implements OrderService {
 
         // 直接修改订单状态
         orderMapper.changeStatusAndCheckoutTime(orderNumber, checkoutTime);
+
+
+        // 要获取个订单id才行，根据订单号获取订单id
+        Orders orders = orderMapper.getByNumber(ordersPaymentDTO.getOrderNumber());
+
+        // 通过webSocket向客户端浏览器推送消息 type,orderId,content
+        Map map = new HashMap<>();
+        map.put("type", 1); // 1表示来单提醒
+        map.put("orderId", orders.getId());
+        map.put("content", "订单号：" + orderNumber);
+        String json = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
+
     }
 
     /**
@@ -536,6 +553,31 @@ public class OrderServiceImpl implements OrderService {
         }
         Orders orders = Orders.builder().id(id).status(Orders.COMPLETED).build();
         orderMapper.update(orders);
+    }
+
+    /**
+     * 用户催单
+     *
+     * @param id
+     */
+    @Override
+    public void reminder(Long id) {
+        // 先根据订单id查询到订单号
+        Orders orderDB = orderMapper.getById(id);
+
+        // 校验订单是否存在
+        if (orderDB == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        String number = orderDB.getNumber();
+
+        // 封装返回信息
+        Map map = new HashMap();
+        map.put("type", 2);
+        map.put("orderId", id);
+        map.put("content", "用户催单:" + number);
+        webSocketServer.sendToAllClient(JSON.toJSONString(map));
     }
 
 

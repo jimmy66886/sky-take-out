@@ -112,4 +112,12 @@ public class OrderController {
         return Result.success();
     }
 
+    @GetMapping("/reminder/{id}")
+    @ApiOperation("用户催单")
+    public Result reminder(@PathVariable Long id) {
+        // 用户催单,服务端接收到催单请求,然后再提醒浏览器
+        orderService.reminder(id);
+        return Result.success();
+    }
+
 }
