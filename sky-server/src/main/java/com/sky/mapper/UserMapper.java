@@ -5,6 +5,9 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDateTime;
+import java.util.Map;
+
 /**
  * @author zzmr
  * @create 2023-09-05 9:16
@@ -24,10 +27,14 @@ public interface UserMapper {
 
     /**
      * 用户注册
+     *
      * @param user
      */
     void insert(User user);
 
     @Select("select * from user where id = #{userId}")
     User getById(Long userId);
+
+    Integer countByMap(Map map);
+
 }
