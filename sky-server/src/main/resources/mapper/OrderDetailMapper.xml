@@ -5,10 +5,10 @@
 
     <!--    插入订单数据<，且要返回订单的id-->
     <insert id="insert" parameterType="java.util.List">
-        insert into order_detail(name, image, order_id, dish_id, setmeal_id, dish_flavor, amount)
+        insert into order_detail(name, image, order_id, dish_id, setmeal_id, dish_flavor, amount,number)
         VALUES
         <foreach collection="orderDetailList" item="od" separator=",">
-            (#{od.name},#{od.image},#{od.orderId},#{od.dishId},#{od.setmealId},#{od.dishFlavor},#{od.amount})
+            (#{od.name},#{od.image},#{od.orderId},#{od.dishId},#{od.setmealId},#{od.dishFlavor},#{od.amount},#{od.number})
         </foreach>
     </insert>
 </mapper>

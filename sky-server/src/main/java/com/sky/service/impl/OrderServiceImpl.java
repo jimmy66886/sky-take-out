@@ -184,8 +184,8 @@ public class OrderServiceImpl implements OrderService {
         orders.setAddress(addressBook.getProvinceName() + addressBook.getDistrictName() + addressBook.getCityName() + addressBook.getDetail());
         // 插入之后会将主键返回
         orderMapper.insert(orders);
-        // 向订单明细表插入n条数据  由购物车的数据决定
 
+        // 向订单明细表插入n条数据  由购物车的数据决定
         List<OrderDetail> orderDetailList = new ArrayList<>();
 
         for (ShoppingCart shoppingCart : shoppingCartList) {
