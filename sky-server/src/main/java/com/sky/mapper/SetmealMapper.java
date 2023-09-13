@@ -56,6 +56,7 @@ public interface SetmealMapper {
 
     /**
      * 通过关联查询进行分页
+     *
      * @param setmealPageQueryDTO
      * @return
      */
@@ -67,4 +68,13 @@ public interface SetmealMapper {
     @Select("SELECT setmeal_dish.copies,dish.description,dish.image,dish.`name`" +
             "FROM setmeal_dish LEFT JOIN dish ON setmeal_dish.dish_id = dish.id WHERE setmeal_id = #{id} ")
     List<DishItemVO> getDishItemById(Long id);
+
+    /**
+     * 根据状态查询套餐数量
+     *
+     * @param status
+     * @return
+     */
+    @Select("select count(id) from setmeal where status = #{status}")
+    Integer getCountByStatus(Integer status);
 }

@@ -98,4 +98,12 @@ public interface OrderMapper {
      * @return
      */
     List<GoodsSalesDTO> getTop10(LocalDateTime beginTime, LocalDateTime endTime);
+
+    /**
+     * 查询某天有多少个不同的用户下单
+     *
+     * @param map
+     * @return
+     */
+    Integer getDistinctUser(Map map);
 }

@@ -36,5 +36,4 @@ public interface UserMapper {
     User getById(Long userId);
 
     Integer countByMap(Map map);
-
 }
